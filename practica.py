@@ -26,7 +26,7 @@ def Miller_Robin(n,k):
     return True
 
 def main():
-    n = 100
+    n = random.randint(1000, 100000)
     k = 10
     print("Prueba de primalidad de Miller-Robin")
     print(f"n = {n}, k = {k}")
