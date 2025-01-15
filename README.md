@@ -1,125 +1,33 @@
-RSA-DLP
+RSA:
 
-Este repositorio contiene la implementación y documentación de métodos relacionados con el cifrado RSA y problemas de Logaritmo Discreto (DLP, por sus siglas en inglés). El objetivo es proporcionar herramientas y ejemplos prácticos para comprender y analizar estos sistemas criptográficos.
+Para la correcta ejecución de este programa, hemos decidido antes de actuar, implementar los siguientes métodos:
 
-Características
+- EEA sobre dos números naturales: Recibe 2 números naturales (x::integer, z::integer) y devuelve una 3-upla con e l MCD, x^(-1)mod y, y^(-1) mod x.
+- Algoritmo de Exponenciación Rápida (sobre dos números positivos dentro de un rango modular): Recibe como parámetros (base, potencia::integer, modulo::integer) y calcula de manera eficiente el resultado. Retorna 1 o la solución.
 
-Implementación de RSA: Generación de claves, cifrado y descifrado de mensajes.
+- Miller-Rabin para verificar si un número es primo (probabilístico): Para ello recibe el número (x::integer) y utiliza una cota de 10 iteraciones para su verificación, en caso de sobrepasarla, devuelve False....
 
-Ataques comunes a RSA: Factorización, pequeños exponentes y análisis de vulnerabilidades.
+- Búsqueda de coprimo: Recibe como parámetro un número natural (x::integer) y retorna el primer valor que encuentre que sea coprimo con el.
 
-Problema del Logaritmo Discreto (DLP): Implementación de algoritmos para resolver logaritmos discretos en grupos finitos.
+Dado todo esto buscamos las claves del RSA de la siguiente forma:
 
-Aplicaciones prácticas: Ejemplos de uso real y simulaciones educativas.
+1. Obtenemos dos números primos (por Miller-Rabin) que llamaremos p y q.
+2. Con p y q obtenemos n de manera que n = p*q.
+3. Establecemos z para que sea igual al orden de n. Este se calcula multiplicando los ordenes de p y q, siendo para estos su totiente (p-1 y q-1).
+4. Buscamos también un valor d, el cual es coprimo con z. (Mediante el procedimiento de búsqueda de coprimo).
+5. Buscamos ahora un valor que sea el inverso multiplicativo de d modulo z (Mediante el EEA) y lo llamamos e.
 
 
-Requisitos
+Con esto podemos formar la clave pública y privada:
+clave pública = (n, d)
+clave privada = (p, q, e)
 
-Este proyecto utiliza Python 3.x y las siguientes dependencias:
+Ahora solo nos queda probar que todo funcione bien. De ser asi, un mensaje que queramos mandar debería cifrarse usando:
+cifrado = M^e mod n
 
-sympy: Para operaciones matemáticas avanzadas.
+y descifrarse usando:
+Mensaje = C^d mod n
 
-numpy: Para cálculos y estructuras de datos.
+Para ello usamos el algoritmo de exponenciación rápida implementado anteriormente, así como métodos propios de maple para convertir el texto a valores numéricos (StringTools-ToByteArray, StringTools-convert).
 
-matplotlib: Para visualización de datos (opcional).
-
-Otras dependencias necesarias según el módulo.
-
-
-Para instalarlas, puedes ejecutar:
-
-pip install -r requirements.txt
-
-Instalación
-
-1. Clona el repositorio en tu máquina local:
-
-git clone https://github.com/tuusuario/RSA-DLP.git
-cd RSA-DLP
-
-
-2. Instala las dependencias necesarias:
-
-pip install -r requirements.txt
-
-
-3. Ejecuta los scripts según los ejemplos proporcionados.
-
-
-
-Uso
-
-RSA
-
-1. Generación de claves:
-
-from rsa import generate_keys
-
-public_key, private_key = generate_keys(bits=2048)
-
-
-2. Cifrado y descifrado:
-
-from rsa import encrypt, decrypt
-
-ciphertext = encrypt("Mensaje secreto", public_key)
-plaintext = decrypt(ciphertext, private_key)
-
-
-
-DLP
-
-1. Resolver logaritmos discretos:
-
-from dlp import solve_dlp
-
-result = solve_dlp(base=2, value=15, modulus=19)
-print("Resultado:", result)
-
-
-2. Visualizar algoritmos:
-
-python dlp_visualization.py
-
-
-
-Estructura del Proyecto
-
-RSA-DLP/
-├── rsa/                # Implementación de RSA
-├── dlp/                # Algoritmos para resolver DLP
-├── examples/           # Ejemplos y casos prácticos
-├── tests/              # Pruebas unitarias
-├── requirements.txt    # Dependencias del proyecto
-└── README.md           # Este archivo
-
-Contribuciones
-
-¡Contribuciones son bienvenidas! Si tienes sugerencias, mejoras o encuentras errores, no dudes en abrir un issue o enviar un pull request.
-
-1. Haz un fork del proyecto.
-
-
-2. Crea una rama para tu feature: git checkout -b feature/nueva-funcionalidad.
-
-
-3. Haz commit de tus cambios: git commit -m "Añadida nueva funcionalidad".
-
-
-4. Haz push a la rama: git push origin feature/nueva-funcionalidad.
-
-
-5. Abre un pull request en este repositorio.
-
-
-
-Licencia
-
-Este proyecto está licenciado bajo la MIT License.
-
-
----
-
-¿Te gustaría incluir alguna sección adicional, como más detalles técnicos o ejemplos?
-
-
+Es de notar que el mensaje antes de procesarlo, lo dividimos en 6-gramas (k-gramas de 6).
